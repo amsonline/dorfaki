@@ -86,3 +86,12 @@
   color: #cbd5e1;
   text-decoration: none;
 }
+
+/* Page background image */
+.bg-dorfaki {
+  background-image: url('/images/dorfaki-bg.png');
+  background-size: 30%;
+  background-attachment: fixed;
+  background-position: center;
+  background-repeat: repeat;
+}
