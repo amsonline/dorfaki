@@ -1,0 +1,37 @@
+{
+  "name": "dorfaki",
+  "version": "1.0.0",
+  "description": "محمدرضا درفکی - مشاور املاک حرفه‌ای در حیدری‌آباد، کرج. وب‌سایت مشاور املاک با PHP، TailwindCSS و jQuery",
+  "main": "index.php",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build:css": "npx tailwindcss build --input src/input.css --output public/css/output.css --minify",
+    "watch:css": "npx tailwindcss build --input src/input.css --output public/css/output.css --watch",
+    "dev": "npm run watch:css & php -S localhost:3000 index.php",
+    "start": "php -S localhost:3000 index.php"
+  },
+  "keywords": [
+    "real-estate",
+    "املاک",
+    "تهران",
+    "مشاور-املاک",
+    "php",
+    "tailwindcss",
+    "jquery",
+    "persian",
+    "rtl",
+    "vazirmatn"
+  ],
+  "author": "محمدرضا درفکی - مشاور املاک حرفه‌ای",
+  "license": "ISC",
+  "dependencies": {
+    "jquery": "^4.0.0"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.3.3",
+    "autoprefixer": "^10.6.2",
+    "postcss": "^8.5.32",
+    "tailwindcss": "^4.3.3"
+  }
+}
+

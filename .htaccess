@@ -1,0 +1,25 @@
+# Dorfaki - Apache Configuration
+# =================================
+# Point your web server document root to this directory.
+# This file routes all non-file requests to index.php (PHP front controller).
+# Static assets in /public/ are served by index.php.
+
+<IfModule mod_rewrite.c>
+    <IfModule mod_negotiation.c>
+        Options -MultiViews -Indexes
+    </IfModule>
+
+    RewriteEngine On
+
+    # Route all non-file, non-directory requests to the PHP front controller
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
+
+# Ensure index.php is used as the directory index
+DirectoryIndex index.php
+
+# PHP settings (uncomment for development)
+# php_flag display_errors on
+# php_value error_reporting E_ALL

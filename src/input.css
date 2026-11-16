@@ -1,0 +1,88 @@
+@import "tailwindcss";
+
+@theme {
+  /* Fonts */
+  --font-sans: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
+  --font-vazirmatn: 'Vazirmatn', 'Tahoma', 'Arial', sans-serif;
+
+  /* Colors — Primary (blue) */
+  --color-primary-50: #f0f9ff;
+  --color-primary-100: #e0f2fe;
+  --color-primary-200: #bae6fd;
+  --color-primary-300: #7dd3fc;
+  --color-primary-400: #38bdf8;
+  --color-primary-500: #0ea5e9;
+  --color-primary-600: #0284c7;
+  --color-primary-700: #0369a1;
+  --color-primary-800: #075995;
+  --color-primary-900: #0c4a6e;
+  --color-primary-950: #082f49;
+
+  /* Colors — Secondary (red) */
+  --color-secondary-50: #fdf4f3;
+  --color-secondary-100: #fbe9e7;
+  --color-secondary-200: #f5c2bf;
+  --color-secondary-300: #ea9b96;
+  --color-secondary-400: #e07471;
+  --color-secondary-500: #d64d4d;
+  --color-secondary-600: #bd3a35;
+  --color-secondary-700: #9e2f27;
+  --color-secondary-800: #80251a;
+  --color-secondary-900: #631b0f;
+
+  /* Colors — Gray (matched to the existing design) */
+  --color-gray-100: #f1f5f9;
+  --color-gray-200: #e2e8f0;
+  --color-gray-300: #cbd5e1;
+  --color-gray-400: #94a3b8;
+  --color-gray-600: #475569;
+  --color-gray-800: #0f172a;
+  --color-gray-900: #020617;
+  --color-gray-950: #082f49;
+}
+
+/* ===== Hero entrance animation =====
+   Image fades in from the right edge of the page,
+   hero text fades in from the left edge of the page,
+   and they meet together at the center. */
+@keyframes heroImageIn {
+  from {
+    opacity: 0;
+    transform: translateX(100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes heroTextIn {
+  from {
+    opacity: 0;
+    transform: translateX(-100%);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.hero-animate-image {
+  animation: heroImageIn 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.hero-animate-text {
+  animation: heroTextIn 1.2s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+}
+
+.hero-delay-100 { animation-delay: 100ms; }
+.hero-delay-300 { animation-delay: 300ms; }
+.hero-delay-500 { animation-delay: 500ms; }
+.hero-delay-700 { animation-delay: 700ms; }
+
+/* Custom utility used by the navigation links */
+.nav-link {
+  display: inline-block;
+  color: #cbd5e1;
+  text-decoration: none;
+}
