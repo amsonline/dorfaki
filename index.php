@@ -260,8 +260,14 @@ if ($method === 'POST' && $uri === '/api/contact') {
     ]);
 }
 
+// Divar listings proxy endpoint — delegates to separate API file
+if ($method === 'POST' && $uri === '/api/divar') {
+    require_once BASE_DIR . '/src/api/divar.php';
+    exit;
+}
+
 // If the URI matches a known route but the method doesn't → 405
-if ($uri === '/health' || $uri === '/api/contact') {
+if ($uri === '/health' || $uri === '/api/contact' || $uri === '/api/divar') {
     sendJson(405, ['success' => false, 'message' => 'روش درخواست نامعتبر.']);
 }
 

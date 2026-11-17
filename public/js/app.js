@@ -134,4 +134,78 @@ $(document).ready(function () {
       $(this).val(persianVal);
     }
   });
+
+  // ===== Divar Listings Loader ====
+  function loadDivarPosts() {
+    const $grid = $('#divarPostsGrid');
+    const $loading = $('#filesLoading');
+    const $error = $('#filesError');
+
+    $loading.removeClass('hidden');
+    $error.addClass('hidden');
+    $grid.empty();
+
+    $.ajax({
+      url: '/api/divar',
+      method: 'POST',
+      dataType: 'json',
+      timeout: 15000,
+    })
+      .done(function (response) {
+        $loading.addClass('hidden');
+
+        const posts = [];
+        if (response && response.post_row_widget_list) {
+          response.post_row_widget_list.forEach(function (widget) {
+            if (widget.widget_type === 'POST_ROW' && widget.data) {
+              const d = widget.data;
+              posts.push({
+                title: d.title || 'بدون عنوان',
+                imageUrl: d.image_url || '',
+                price: d.middle_description_text || '',
+                location: d.bottom_description_text || '',
+                topDescription: d.top_description_text || '',
+                redText: d.red_text || '',
+                imageCount: d.image_top_left_tag ? d.image_top_left_tag.text : '',
+                token: d.token || '',
+              });
+            }
+          });
+        }
+
+        if (posts.length === 0) {
+          $grid.html('<div class="col-span-3 text-center py-8 text-gray-500">هیچ آگهی‌ای پیدا نشد.</div>');
+          return;
+        }
+
+        posts.forEach(function (post) {
+          const card = '\
+            <a href="https://divar.ir/v/' + post.token + '" target="_blank" rel="noopener noreferrer" class="block bg-transparent rounded-xl border border-white/20 overflow-hidden hover:border-white/40 transition-all group">\
+              <div class="relative w-full h-60">\
+                <img src="' + post.imageUrl + '" alt="' + post.title + '" class="w-full h-full object-cover">\
+                ' + (post.imageCount ? '<div class="absolute top-2 right-2 bg-white/90 backdrop-blur text-gray-900 text-xs font-bold px-2 py-1 rounded shadow-sm">' + post.imageCount + '</div>' : '') + '\
+              </div>\
+              <div class="p-5">\
+                <h3 class="text-white-900 font-bold text-lg mb-1 leading-tight group-hover:text-primary-600 transition-colors">' + post.title + '</h3>\
+                <div class="flex items-baseline gap-1 mb-2">\
+                  ' + (post.price ? '<span class="text-white-900 text-sm font-medium">' + post.price + '</span>' : '') + '\
+                  ' + (post.topDescription ? '<span class="text-white-900 text-xs ml-1">' + post.topDescription + '</span>' : '') + '\
+                </div>\
+                <p class="text-white-900 text-sm mb-3">' + post.location + '</p>\
+              </div>\
+            </a>\
+          ';
+          $grid.append(card);
+        });
+      })
+      .fail(function () {
+        $loading.addClass('hidden');
+        $error.removeClass('hidden');
+      });
+  }
+
+  // Load Divar posts on page load
+  $(window).on('load', function () {
+    loadDivarPosts();
+  });
 });
