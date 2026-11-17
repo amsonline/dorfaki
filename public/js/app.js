@@ -82,6 +82,22 @@ $(document).ready(function () {
     }
   });
 
+  // ===== Scroll to Top Button =====
+  const $scrollToTop = $('#scrollToTop');
+
+  $(window).on('scroll', function () {
+    if ($(this).scrollTop() > 300) {
+      $scrollToTop.removeClass('opacity-0 pointer-events-none');
+    } else {
+      $scrollToTop.addClass('opacity-0 pointer-events-none');
+    }
+  });
+
+  $scrollToTop.on('click', function (e) {
+    e.preventDefault();
+    $('html, body').animate({ scrollTop: 0 }, 600, 'swing');
+  });
+
   // ===== Contact Form Submission =====
   $('#contactForm').on('submit', function (e) {
     e.preventDefault();

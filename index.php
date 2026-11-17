@@ -271,5 +271,52 @@ if ($uri === '/health' || $uri === '/api/contact' || $uri === '/api/divar') {
     sendJson(405, ['success' => false, 'message' => 'روش درخواست نامعتبر.']);
 }
 
+// ===== Admin Panel =====
+require_once BASE_DIR . '/src/auth.php';
+adminStartSession();
+
+if (str_starts_with($uri, '/admin')) {
+    // Logout
+    if ($method === 'GET' && $uri === '/admin/logout') {
+        require_once BASE_DIR . '/src/views/admin/logout.php';
+        exit;
+    }
+
+    // Login page (GET) and login processing (POST) — handled inside login.php
+    if ($uri === '/admin/login') {
+        require_once BASE_DIR . '/src/views/admin/login.php';
+        exit;
+    }
+
+    // Redirect /admin → dashboard
+    if ($uri === '/admin') {
+        header('Location: /admin/dashboard', true, 302);
+        exit;
+    }
+
+    // Protected admin pages — authentication required
+    requireAdmin();
+
+    $adminPages = [
+        '/admin/dashboard'   => 'dashboard.php',
+        '/admin/files'       => 'files.php',
+        '/admin/contact'     => 'contact.php',
+        '/admin/website-info'=> 'website-info.php',
+        '/admin/settings'    => 'settings.php',
+    ];
+
+    if (isset($adminPages[$uri])) {
+        $viewFile = BASE_DIR . '/src/views/admin/' . $adminPages[$uri];
+        if (is_file($viewFile) && is_readable($viewFile)) {
+            require $viewFile;
+            exit;
+        }
+        sendJson(500, ['success' => false, 'message' => 'خطا در بارگذاری صفحه مدیریت.']);
+    }
+
+    // Unknown admin route
+    sendJson(404, ['success' => false, 'message' => 'صفحه مدیریت مورد نظر یافت نشد.']);
+}
+
 // ===== 404 Handler =====
 sendJson(404, ['success' => false, 'message' => 'صفحه مورد نظر یافت نشد.']);
