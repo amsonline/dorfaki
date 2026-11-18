@@ -1,0 +1,308 @@
+<?php
+declare(strict_types=1);
+
+/**
+ * Dorfaki — Homepage (Server-Rendered)
+ *
+ * All website content (title, subtitles, hero, about me, contact info)
+ * is populated from MySQL at page load time — no AJAX needed.
+ * Blank fields are not rendered at all.
+ */
+
+require_once __DIR__ . '/../db.php';
+
+// Load contact info
+$contact = [
+    'tel'        => '',
+    'address'    => '',
+    'email'      => '',
+    'telegram'   => '',
+    'whatsapp'   => '',
+];
+
+// Load website info
+$website = [
+    'title'            => '',
+    'header_subtitle'  => '',
+    'footer_subtitle'  => '',
+    'hero_title'       => '',
+    'hero_subtitle'    => '',
+    'about_me'         => '',
+    'divar_merchant_id' => '',
+];
+
+try {
+    $pdo = dorfakiDb();
+
+    // Contact info
+    $stmt = $pdo->prepare('SELECT tel, address, email, telegram, whatsapp FROM contact_info WHERE id = 1');
+    $stmt->execute();
+    $row = $stmt->fetch();
+    if ($row) {
+        $contact = [
+            'tel'        => $row['tel']        ?? '',
+            'address'    => $row['address']    ?? '',
+            'email'      => $row['email']      ?? '',
+            'telegram'   => $row['telegram']   ?? '',
+            'whatsapp'   => $row['whatsapp']   ?? '',
+        ];
+    }
+
+    // Website info
+    $stmt = $pdo->prepare('SELECT * FROM website_info WHERE id = 1');
+    $stmt->execute();
+    $row = $stmt->fetch();
+    if ($row) {
+        foreach ($website as $key => $default) {
+            $website[$key] = $row[$key] ?? $default;
+        }
+    }
+} catch (PDOException $e) {
+    error_log('Homepage load error: ' . $e->getMessage());
+}
+
+// Helper: render a contact list item; returns '' if blank (hidden)
+function renderContactItem(string $icon, string $key, array $contact): string
+{
+    $value = trim($contact[$key] ?? '');
+    if ($value === '') {
+        return '';
+    }
+
+    $escapedValue = htmlspecialchars($value, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+    $escapedIcon  = htmlspecialchars($icon, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8');
+
+    $display = $escapedValue;
+    switch ($key) {
+        case 'tel':
+            $display = '<a href="tel:' . $escapedValue . '" class="text-primary-400 hover:underline">' . $escapedValue . '</a>';
+            break;
+        case 'email':
+            $display = '<a href="mailto:' . $escapedValue . '" class="text-primary-400 hover:underline">' . $escapedValue . '</a>';
+            break;
+        case 'telegram':
+            $tg = str_starts_with($value, '@') ? substr($value, 1) : $value;
+            $display = '<a href="https://t.me/' . htmlspecialchars($tg, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') . '" target="_blank" rel="noopener noreferrer" class="text-primary-400 hover:underline">' . $escapedValue . '</a>';
+            break;
+        case 'whatsapp':
+            $display = '<a href="' . $escapedValue . '" target="_blank" rel="noopener noreferrer" class="text-primary-400 hover:underline">' . $escapedValue . '</a>';
+            break;
+    }
+
+    return '<li class="contact-item flex items-center gap-3 text-sm text-gray-300">
+        <span class="contact-icon">' . $escapedIcon . '</span>
+        <span class="contact-value">' . $display . '</span>
+    </li>';
+}
+?>
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title><?= htmlspecialchars($website['title'] ?: 'محمدرضا درفکی | مشاور املاک حرفه‌ای در حیدرآباد، کرج', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></title>
+  <meta name="description"
+    content="<?= htmlspecialchars($website['title'] ?: 'محمدرضا درفکی، مشاور املاک حرفه‌ای در حیدری‌آباد، کرج. با ما در سرمایه‌گذاری املاک ماهر شوید.', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" />
+  <meta name="author" content="<?= htmlspecialchars($website['title'] ?: 'محمدرضا درفکی - مشاور املاک حرفه‌ای', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" />
+
+  <!-- Vazirmatn Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Vazirmatn:wght@100..900&display=swap"
+    rel="stylesheet" />
+
+  <!-- Built Tailwind CSS -->
+  <link href="/css/output.css" rel="stylesheet" />
+
+  <!-- jQuery (local copy from node_modules) -->
+  <script src="/js/jquery.min.js"></script>
+</head>
+
+<body class="bg-dorfaki text-gray-200 antialiased">
+
+  <!-- ===== Header ===== -->
+  <header class="bg-gray-900/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-800" id="header">
+    <div class="container mx-auto px-4 lg:px-8">
+      <div class="flex items-center justify-between h-16 lg:h-20">
+        <!-- Logo -->
+        <div class="flex items-center space-x-3 space-x-reverse">
+          <div class="w-10 h-10 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-lg flex items-center justify-center">
+            <span class="text-white font-bold text-xl">🏢</span>
+          </div>
+          <div>
+            <span class="text-xl lg:text-2xl font-bold text-white"><?= htmlspecialchars($website['title'] ?: 'درفکی', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></span>
+            <p class="text-xs text-gray-400 -mt-1"><?= htmlspecialchars($website['header_subtitle'] ?: 'مشاور املاک حرفه‌ای', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></p>
+          </div>
+        </div>
+
+        <!-- Desktop Navigation -->
+        <nav class="hidden lg:flex space-x-8 space-x-reverse" id="mainNav">
+          <a href="#home" class="nav-link text-gray-300 hover:text-white font-medium transition-colors">خانه</a>
+          <a href="#about" class="nav-link text-gray-300 hover:text-white font-medium transition-colors">درباره من</a>
+          <a href="#files" class="nav-link text-gray-300 hover:text-white font-medium transition-colors">فایل‌ها</a>
+          <a href="#contact" class="nav-link text-gray-300 hover:text-white font-medium transition-colors">تماس</a>
+        </nav>
+
+        <!-- Mobile Menu Button -->
+        <button id="mobileMenuBtn" class="lg:hidden p-2 rounded-lg text-gray-300 hover:bg-gray-800 transition-colors" aria-label="منو">
+          <span class="block w-6 h-0.5 bg-gray-400 mb-1 transition-all"></span>
+          <span class="block w-6 h-0.5 bg-gray-400 mb-1 transition-all"></span>
+          <span class="block w-6 h-0.5 bg-gray-400 transition-all"></span>
+        </button>
+      </div>
+
+      <!-- Mobile Navigation -->
+      <nav id="mobileNav" class="lg:hidden hidden pb-4 space-y-2 border-t border-gray-800">
+        <a href="#home" class="block py-2 text-gray-300 hover:text-white font-medium transition-colors">خانه</a>
+        <a href="#about" class="block py-2 text-gray-300 hover:text-white font-medium transition-colors">درباره من</a>
+        <a href="#files" class="block py-2 text-gray-300 hover:text-white font-medium transition-colors">فایل‌ها</a>
+        <a href="#contact" class="block py-2 text-gray-300 hover:text-white font-medium transition-colors">تماس</a>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ===== Hero Section ===== -->
+  <section class="relative min-h-screen overflow-hidden" id="home">
+    <div class="container mx-auto px-4 lg:px-8 relative z-10 flex h-full flex-col lg:flex-row items-center justify-center gap-8 lg:gap-16 text-center">
+      <div class="max-w-[42rem] lg:order-1">
+        <h1 id="heroTitle" class="text-6xl lg:text-8xl font-black text-white mb-3 leading-none opacity-0 hero-animate-text hero-delay-300">
+          <?= htmlspecialchars($website['hero_title'] ?: 'محمدرضا درفکی', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>
+        </h1>
+        <p id="heroSubtitle" class="text-2xl lg:text-3xl text-gray-400 mb-6 opacity-0 hero-animate-text hero-delay-500">
+          <?= htmlspecialchars($website['hero_subtitle'] ?: 'مشاور املاک حیدرآباد', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>
+        </p>
+      </div>
+      <div class="max-w-[55vw] relative lg:order-2">
+        <img
+          id="heroImage"
+          src="/images/body-bg.png"
+          alt="<?= htmlspecialchars($website['hero_title'] ?: 'محمدرضا درفکی', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>"
+          class="max-w-full max-h-[82vh] w-auto h-auto object-contain opacity-0 hero-animate-image hero-delay-100"
+        />
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== About Section ===== -->
+  <section class="py-12 lg:py-20" id="about">
+    <div class="container mx-auto px-4 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl font-bold text-white mb-3">درباره من</h2>
+        <div class="max-w-3xl mx-auto text-right space-y-6 mt-12">
+          <?= $website['about_me'] ? '<div class="text-lg text-gray-300 leading-relaxed">' . $website['about_me'] . '</div>' : '<p class="text-lg text-gray-300 leading-relaxed">سلام، من محمدرضا درفکی هستم، مشاور املاک حرفه‌ای در حیدری‌آباد، کرج.</p><p class="text-lg text-gray-300 leading-relaxed">سال‌ها است که در حوزه خرید، فروش و اجاره انواع ملک (آپارتمان، ویلا و زمین) فعالیت می‌کنم. با شناخت عمیق از بازار املاک حیدری‌آباد و نواحی کرج و ارائه مشاوره‌های دقیق و صادقانه، به مشتریان عزیزانم کمک می‌کنم تا بهترین تصمیم برای خرید، فروش یا سرمایه‌گذاری در ملک را بگیرند.</p><p class="text-lg text-gray-300 leading-relaxed">مسیر حرفه‌ای من از اولین معامله‌های املاکی آغاز شد و با گذری از زمان، با ارزیابی دقیق ارزش ملک، مذاکرهٔ مناسب و پایان‌دادن به معامله‌های موفق، اعتبار و اعتماد خریداران و فروشندگان را به دست آورده‌ام.</p><p class="text-lg text-gray-300 leading-relaxed">من معتقد هستم مالکیت یک ملک نه صرفاً یک سرمایه‌گذاری مالی است، بلکه تاثیر مستقیم در کیفیت زندگی خانواده شماست. در هر مرحلهٔ کار، شفافیت، دقت و مشتری‌محوریت برای من اولویت دارند.</p>' ?>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Files Section ===== -->
+  <section class="py-12 lg:py-20 bg-gray-900/50" id="files">
+    <div class="container mx-auto px-4 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl font-bold text-white mb-3">فایل‌ها</h2>
+        <p class="text-gray-400 text-sm">آگهی‌های فعال مشاور اداری و تجاری (درفکی) در دیوار</p>
+      </div>
+      <div id="filesLoading" class="text-center py-8 hidden">
+        <div class="inline-block w-8 h-8 border-4 border-gray-600 border-t-white rounded-full animate-spin"></div>
+        <p class="mt-3 text-gray-400 text-sm">در حال بارگذاری آگهی‌ها...</p>
+      </div>
+      <div id="filesError" class="text-center py-8 hidden text-red-500 text-sm">
+        خطا در بارگذاری داده‌ها. لطفاً دوباره تلاش کنید.
+      </div>
+      <div id="divarPostsGrid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 lg:gap-10"></div>
+    </div>
+  </section>
+
+  <!-- ===== Contact Section ===== -->
+  <section class="py-12 lg:py-20" id="contact">
+    <div class="container mx-auto px-4 lg:px-8">
+      <div class="text-center mb-12">
+        <h2 class="text-2xl lg:text-3xl font-bold text-white mb-3">تماس با ما</h2>
+        <p class="text-gray-400 max-w-2xl mx-auto">
+          آماده پاسخ‌گویی به سؤالات شما هستیم
+        </p>
+      </div>
+      <div class="max-w-2xl mx-auto">
+        <form id="contactForm" class="space-y-4">
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+            <div>
+              <label for="name" class="block text-sm font-medium text-gray-300 mb-1">نام و نام خانوادگی</label>
+              <input type="text" id="name" name="name" required
+                class="w-full px-4 py-2 bg-gray-900 border border-gray-600 text-white placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                 />
+            </div>
+            <div>
+              <label for="phone" class="block text-sm font-medium text-gray-300 mb-1">شماره موبایل</label>
+              <input type="tel" id="phone" name="phone" required
+                class="w-full px-4 py-2 bg-gray-900 border border-gray-600 text-white placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+                 />
+            </div>
+          </div>
+          <div>
+            <label for="email" class="block text-sm font-medium text-gray-300 mb-1">ایمیل (اختیاری)</label>
+            <input type="email" id="email" name="email"
+              class="w-full px-4 py-2 bg-gray-900 border border-gray-600 text-white placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors"
+               />
+          </div>
+          <div>
+            <label for="message" class="block text-sm font-medium text-gray-300 mb-1">پیام شما</label>
+            <textarea id="message" name="message" rows="4" required
+              class="w-full px-4 py-2 bg-gray-900 border border-gray-600 text-white placeholder-gray-500 rounded-lg focus:ring-2 focus:ring-primary-500 focus:border-transparent transition-colors resize-none"></textarea>
+          </div>
+          <button type="submit"
+            class="w-full bg-gradient-to-r from-primary-600 to-secondary-600 text-white font-bold py-3 px-6 rounded-lg hover:shadow-lg transition-all">
+            &#128224; ارسال پیام
+          </button>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== Footer ===== -->
+  <footer class="text-gray-300 py-12 border-t border-gray-900">
+    <div class="container mx-auto px-4 lg:px-8">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-8 text-center md:text-right">
+        <div>
+          <div class="flex items-center justify-center md:justify-start space-x-3 space-x-reverse mb-4">
+            <div class="w-8 h-8 bg-gradient-to-br from-primary-600 to-secondary-600 rounded-lg flex items-center justify-center">
+              <span class="text-white font-bold">🏢</span>
+            </div>
+            <span class="text-white font-bold text-xl"><?= htmlspecialchars($website['title'] ?: 'درفکی', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></span>
+          </div>
+          <p class="text-sm"><?= htmlspecialchars($website['footer_subtitle'] ?: 'مشاور املاک حرفه‌ای در حیدری‌آباد، کرج.', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></p>
+          <p class="text-xs mt-2">© ۱۴۰۴ <?= htmlspecialchars($website['title'] ?: 'محمدرضا درفکی', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>. تمامی حقوق محفوظ است.</p>
+        </div>
+        <div>
+          <h3 class="text-white font-bold mb-4">تماس با ما</h3>
+          <ul class="space-y-2 text-sm">
+            <?= renderContactItem('📍', 'address', $contact) ?>
+            <?= renderContactItem('📞', 'tel', $contact) ?>
+            <?= renderContactItem('📧', 'email', $contact) ?>
+            <?= renderContactItem('💬', 'telegram', $contact) ?>
+            <?= renderContactItem('📱', 'whatsapp', $contact) ?>
+          </ul>
+        </div>
+        <div>
+          <h3 class="text-white font-bold mb-4">درباره من</h3>
+          <ul class="space-y-2 text-sm">
+            <li><a href="#about" class="hover:text-white transition-colors">درباره من</a></li>
+            <li><a href="#files" class="hover:text-white transition-colors">فایل‌ها</a></li>
+            <li><a href="#contact" class="hover:text-white transition-colors">تماس</a></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <!-- Scroll to Top Button -->
+  <button id="scrollToTop" class="fixed bottom-8 right-8 z-40 w-12 h-12 bg-gradient-to-r from-primary-600 to-secondary-600 text-white rounded-full shadow-lg hover:shadow-xl transition-all duration-300 hover:scale-110 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 opacity-0 pointer-events-none" aria-label="بازگشت به بالای صفحه">
+    ↑
+  </button>
+
+  <!-- jQuery App Logic (cache-busted v1) -->
+  <script src="/js/app.js?v=1"></script>
+</body>
+
+</html>

@@ -2,7 +2,8 @@
 /**
  * Divar API Proxy — src/api/divar.php
  *
- * Fetches premium panel data from divar.ir/pro/FFIEsACX via POST request.
+ * Fetches premium panel data from divar.ir via POST request using the
+ * Divar merchant ID stored in the database (website_info table).
  * Parses the server-rendered HTML response to extract embedded JSON state.
  *
  * Usage:
@@ -12,6 +13,23 @@
  */
 
 declare(strict_types=1);
+
+require_once __DIR__ . '/../db.php';
+
+// Default merchant ID (fallback)
+$divarMerchantId = 'FFIEsACX';
+
+try {
+    $pdo = dorfakiDb();
+    $stmt = $pdo->prepare('SELECT divar_merchant_id FROM website_info WHERE id = 1');
+    $stmt->execute();
+    $row = $stmt->fetch();
+    if ($row && !empty($row['divar_merchant_id'])) {
+        $divarMerchantId = $row['divar_merchant_id'];
+    }
+} catch (PDOException $e) {
+    // Use default if DB is unavailable
+}
 
 // Ensure JSON response
 header('Content-Type: application/json; charset=utf-8');
@@ -27,7 +45,7 @@ if ($method !== 'POST') {
     exit;
 }
 
-$divarUrl = 'https://api.divar.ir/v8/premium-user/web/business/brand-landing/FFIEsACX';
+$divarUrl = 'https://api.divar.ir/v8/premium-user/web/business/brand-landing/' . $divarMerchantId;
 
 $ch = curl_init();
 curl_setopt_array($ch, [

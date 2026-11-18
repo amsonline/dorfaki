@@ -29,6 +29,28 @@ define('STORAGE_DIR', sys_get_temp_dir() . '/dorfaki');
 define('RATE_LIMIT_MAX', 100);
 define('RATE_LIMIT_WINDOW', 15 * 60); // 15 minutes in seconds
 
+// ===== Load .env file (if present) =====
+$envFile = BASE_DIR . '/.env';
+if (is_file($envFile)) {
+    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
+    foreach ($lines as $line) {
+        $line = trim($line);
+        if (str_starts_with($line, '#') || str_starts_with($line, ';')) {
+            continue;
+        }
+        if (strpos($line, '=') !== false) {
+            [$key, $value] = explode('=', $line, 2);
+            $key = trim($key);
+            $value = trim($value, "\"'");
+            if (!isset($_ENV[$key]) && !isset($_SERVER[$key])) {
+                putenv($key . '=' . $value);
+                $_ENV[$key] = $value;
+                $_SERVER[$key] = $value;
+            }
+        }
+    }
+}
+
 if (!is_dir(STORAGE_DIR)) {
     @mkdir(STORAGE_DIR, 0755, true);
 }
@@ -199,13 +221,12 @@ if (!checkRateLimit()) {
 
 // ===== Route Handling =====
 
-// Main page — Single Page Application
+// Main page — Server-rendered SPA
 if ($method === 'GET' && $uri === '/') {
-    $htmlFile = VIEWS_DIR . '/index.html';
-    if (is_file($htmlFile) && is_readable($htmlFile)) {
+    $viewFile = VIEWS_DIR . '/index.php';
+    if (is_file($viewFile) && is_readable($viewFile)) {
         header('Content-Type: text/html; charset=utf-8');
-        header('Content-Length: ' . filesize($htmlFile));
-        readfile($htmlFile);
+        require $viewFile;
         exit;
     }
     sendJson(500, ['success' => false, 'message' => 'خطا در بارگذاری صفحهٔ اصلی.']);
@@ -266,13 +287,44 @@ if ($method === 'POST' && $uri === '/api/divar') {
     exit;
 }
 
+// Contact info API — public read for the website (from MySQL)
+if ($method === 'GET' && $uri === '/api/contact-info') {
+    require_once BASE_DIR . '/src/db.php';
+    $contact = [
+        'tel'        => '',
+        'address'    => '',
+        'email'      => '',
+        'telegram'   => '',
+        'whatsapp'   => '',
+    ];
+    try {
+        $pdo = dorfakiDb();
+        $stmt = $pdo->prepare('SELECT tel, address, email, telegram, whatsapp FROM contact_info WHERE id = 1');
+        $stmt->execute();
+        $row = $stmt->fetch();
+        if ($row) {
+            $contact = [
+                'tel'        => $row['tel']        ?? '',
+                'address'    => $row['address']    ?? '',
+                'email'      => $row['email']      ?? '',
+                'telegram'   => $row['telegram']   ?? '',
+                'whatsapp'   => $row['whatsapp']   ?? '',
+            ];
+        }
+    } catch (PDOException $e) {
+        sendJson(500, ['success' => false, 'message' => 'خطا در بارگذاری اطلاعات تماس.']);
+    }
+    sendJson(200, $contact);
+}
+
 // If the URI matches a known route but the method doesn't → 405
-if ($uri === '/health' || $uri === '/api/contact' || $uri === '/api/divar') {
+if ($uri === '/health' || $uri === '/api/contact' || $uri === '/api/divar' || $uri === '/api/contact-info') {
     sendJson(405, ['success' => false, 'message' => 'روش درخواست نامعتبر.']);
 }
 
 // ===== Admin Panel =====
 require_once BASE_DIR . '/src/auth.php';
+require_once BASE_DIR . '/src/db.php';
 adminStartSession();
 
 if (str_starts_with($uri, '/admin')) {

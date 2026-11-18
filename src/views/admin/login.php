@@ -73,12 +73,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         <div class="form-group">
           <label for="username">نام کاربری</label>
           <input type="text" id="username" name="username" required autocomplete="username"
-            placeholder="admin" />
+             />
         </div>
         <div class="form-group">
           <label for="password">رمز عبور</label>
           <input type="password" id="password" name="password" required autocomplete="current-password"
-            placeholder="admin" />
+             />
         </div>
         <button type="submit" id="loginBtn">ورود</button>
       </form>
