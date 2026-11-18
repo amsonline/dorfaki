@@ -1,7 +1,7 @@
 {
   "name": "dorfaki",
   "version": "1.0.0",
-  "description": "محمدرضا درفکی - مشاور املاک حرفه‌ای در حیدری‌آباد، کرج. وب‌سایت مشاور املاک با PHP، TailwindCSS و jQuery",
+  "description": "محمدرضا درفکی - مشاور املاک حرفه‌ای در حیدر‌آباد، کرج. وب‌سایت مشاور املاک با PHP، TailwindCSS و jQuery",
   "main": "index.php",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",

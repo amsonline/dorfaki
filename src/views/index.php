@@ -103,7 +103,7 @@ function renderContactItem(string $icon, string $key, array $contact): string
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title><?= htmlspecialchars($website['title'] ?: 'محمدرضا درفکی | مشاور املاک حرفه‌ای در حیدرآباد، کرج', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></title>
   <meta name="description"
-    content="<?= htmlspecialchars($website['title'] ?: 'محمدرضا درفکی، مشاور املاک حرفه‌ای در حیدری‌آباد، کرج. با ما در سرمایه‌گذاری املاک ماهر شوید.', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" />
+    content="<?= htmlspecialchars($website['title'] ?: 'محمدرضا درفکی، مشاور املاک حرفه‌ای در حیدر‌آباد، کرج. با ما در سرمایه‌گذاری املاک ماهر شوید.', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" />
   <meta name="author" content="<?= htmlspecialchars($website['title'] ?: 'محمدرضا درفکی - مشاور املاک حرفه‌ای', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>" />
 
   <!-- Vazirmatn Font -->
@@ -191,7 +191,7 @@ function renderContactItem(string $icon, string $key, array $contact): string
       <div class="text-center mb-12">
         <h2 class="text-2xl lg:text-3xl font-bold text-white mb-3">درباره من</h2>
         <div class="max-w-3xl mx-auto text-right space-y-6 mt-12">
-          <?= $website['about_me'] ? '<div class="text-lg text-gray-300 leading-relaxed">' . $website['about_me'] . '</div>' : '<p class="text-lg text-gray-300 leading-relaxed">سلام، من محمدرضا درفکی هستم، مشاور املاک حرفه‌ای در حیدری‌آباد، کرج.</p><p class="text-lg text-gray-300 leading-relaxed">سال‌ها است که در حوزه خرید، فروش و اجاره انواع ملک (آپارتمان، ویلا و زمین) فعالیت می‌کنم. با شناخت عمیق از بازار املاک حیدری‌آباد و نواحی کرج و ارائه مشاوره‌های دقیق و صادقانه، به مشتریان عزیزانم کمک می‌کنم تا بهترین تصمیم برای خرید، فروش یا سرمایه‌گذاری در ملک را بگیرند.</p><p class="text-lg text-gray-300 leading-relaxed">مسیر حرفه‌ای من از اولین معامله‌های املاکی آغاز شد و با گذری از زمان، با ارزیابی دقیق ارزش ملک، مذاکرهٔ مناسب و پایان‌دادن به معامله‌های موفق، اعتبار و اعتماد خریداران و فروشندگان را به دست آورده‌ام.</p><p class="text-lg text-gray-300 leading-relaxed">من معتقد هستم مالکیت یک ملک نه صرفاً یک سرمایه‌گذاری مالی است، بلکه تاثیر مستقیم در کیفیت زندگی خانواده شماست. در هر مرحلهٔ کار، شفافیت، دقت و مشتری‌محوریت برای من اولویت دارند.</p>' ?>
+          <?= $website['about_me'] ? '<div class="text-lg text-gray-300 leading-relaxed">' . $website['about_me'] . '</div>' : '<p class="text-lg text-gray-300 leading-relaxed">سلام، من محمدرضا درفکی هستم، مشاور املاک حرفه‌ای در حیدر‌آباد، کرج.</p><p class="text-lg text-gray-300 leading-relaxed">سال‌ها است که در حوزه خرید، فروش و اجاره انواع ملک (آپارتمان، ویلا و زمین) فعالیت می‌کنم. با شناخت عمیق از بازار املاک حیدر‌آباد و نواحی کرج و ارائه مشاوره‌های دقیق و صادقانه، به مشتریان عزیزانم کمک می‌کنم تا بهترین تصمیم برای خرید، فروش یا سرمایه‌گذاری در ملک را بگیرند.</p><p class="text-lg text-gray-300 leading-relaxed">مسیر حرفه‌ای من از اولین معامله‌های املاکی آغاز شد و با گذری از زمان، با ارزیابی دقیق ارزش ملک، مذاکرهٔ مناسب و پایان‌دادن به معامله‌های موفق، اعتبار و اعتماد خریداران و فروشندگان را به دست آورده‌ام.</p><p class="text-lg text-gray-300 leading-relaxed">من معتقد هستم مالکیت یک ملک نه صرفاً یک سرمایه‌گذاری مالی است، بلکه تاثیر مستقیم در کیفیت زندگی خانواده شماست. در هر مرحلهٔ کار، شفافیت، دقت و مشتری‌محوریت برای من اولویت دارند.</p>' ?>
         </div>
       </div>
     </div>
@@ -271,7 +271,7 @@ function renderContactItem(string $icon, string $key, array $contact): string
             </div>
             <span class="text-white font-bold text-xl"><?= htmlspecialchars($website['title'] ?: 'درفکی', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></span>
           </div>
-          <p class="text-sm"><?= htmlspecialchars($website['footer_subtitle'] ?: 'مشاور املاک حرفه‌ای در حیدری‌آباد، کرج.', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></p>
+          <p class="text-sm"><?= htmlspecialchars($website['footer_subtitle'] ?: 'مشاور املاک حرفه‌ای در حیدر‌آباد، کرج.', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?></p>
           <p class="text-xs mt-2">© ۱۴۰۴ <?= htmlspecialchars($website['title'] ?: 'محمدرضا درفکی', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8') ?>. تمامی حقوق محفوظ است.</p>
         </div>
         <div>
