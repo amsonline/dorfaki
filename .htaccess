@@ -23,3 +23,9 @@ DirectoryIndex index.php
 # PHP settings (uncomment for development)
 # php_flag display_errors on
 # php_value error_reporting E_ALL
+
+# Serve robots.txt
+RewriteRule ^robots\.txt$ /robots.txt [L,NC]
+
+# Serve sitemap.xml
+RewriteRule ^sitemap\.xml$ /sitemap.xml [L,NC]

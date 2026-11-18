@@ -1,0 +1,7 @@
+# Dorfaki robots.txt
+User-agent: *
+Disallow: /admin/
+Allow: /
+
+# Sitemap
+Sitemap: https://dorfaki.example.com/sitemap.xml
