@@ -96,6 +96,9 @@ function extractPreloadedState(string $html): array|false
             return $state;
         }
     }
+
+    // die(print_r(json_decode($html, true), true));
+    return json_decode($html, true);
     return false;
 }
 
@@ -107,13 +110,24 @@ function extractPreloadedState(string $html): array|false
  */
 function extractAdsFromState(array $state): array
 {
+    // die(print_r(array_keys($state), true));
     $ads = [];
 
     if (!isset($state['premiumPanel']['landing']['postRowWidgets'])) {
-        return $ads;
+        if (!isset($state['post_row_widget_list'])) {
+            return $ads;
+        }
     }
 
-    foreach ($state['premiumPanel']['landing']['postRowWidgets'] as $widget) {
+    if (isset($state['post_row_widget_list'])) {
+        $rawAds = $state['post_row_widget_list'];
+    }else{
+        $rawAds = $state['premiumPanel']['landing']['postRowWidgets'];
+    }
+
+
+    foreach ($rawAds as $widget) {
+        // die(print_r($widget, true));
         if (!isset($widget['widget_type']) || $widget['widget_type'] !== 'POST_ROW') {
             continue;
         }
@@ -121,7 +135,7 @@ function extractAdsFromState(array $state): array
         $data = $widget['data'] ?? [];
 
         // Extract ad identifier
-        $adId = $data['ad_id'] ?? ($data['id'] ?? ($data['widget_id'] ?? null));
+        $adId = $data['token'] ?? ($data['ad_id'] ?? ($data['widget_id'] ?? null));
         if (empty($adId)) {
             $adId = md5(serialize($data));
         }
@@ -129,9 +143,9 @@ function extractAdsFromState(array $state): array
         $ad = [
             'divar_ad_id'      => $adId,
             'title'            => $data['title'] ?? '',
-            'price'            => $data['price'] ?? '',
-            'location'         => $data['location'] ?? ($data['area'] ?? ''),
-            'image_url'        => $data['image'] ?? ($data['images'][0] ?? ''),
+            'price'            => $data['price'] ?? ($data['middle_description_text'] ?? ''),
+            'location'         => $data['location'] ?? ($data['area'] ?? ($data['bottom_description_text'] ?? '')),
+            'image_url'        => $data['image'] ?? ($data['images'][0] ?? ($data['image_url'] ?? '')),
             'description'      => $data['description'] ?? '',
             'url'              => $data['url'] ?? ($data['link'] ?? ''),
             'widget_id'        => $data['widget_id'] ?? '',
