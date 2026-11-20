@@ -63,8 +63,35 @@ CREATE TABLE IF NOT EXISTS `settings` (
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
 
 -- ======================================================================
--- End of schema
+-- Table: divar_ads
+-- Stores Divar ads data fetched from the premium panel.
+-- Each ad has a unique divar_ad_id, a preserve flag to prevent deletion,
+-- and an is_hidden flag to mark removed ads without deleting them.
 -- ======================================================================
+CREATE TABLE IF NOT EXISTS `divar_ads` (
+    `id` INT UNSIGNED NOT NULL AUTO_INCREMENT,
+    `divar_ad_id` VARCHAR(100) NOT NULL COMMENT 'شناسه آگهیDivider',
+    `title` VARCHAR(500) NOT NULL COMMENT 'عنوان آگهی',
+    `price` VARCHAR(100) DEFAULT NULL COMMENT 'قیمت',
+    `location` VARCHAR(255) DEFAULT NULL COMMENT 'موقعیت',
+    `image_url` VARCHAR(500) DEFAULT NULL COMMENT 'URL تصویر',
+    `description` TEXT DEFAULT NULL COMMENT 'توضیحات',
+    `url` VARCHAR(500) DEFAULT NULL COMMENT 'لینک آگهی در دیوار',
+    `widget_id` VARCHAR(100) DEFAULT NULL COMMENT 'شناسه ویجت',
+    `preserve` TINYINT(1) DEFAULT 0 COMMENT 'اگر TRUE então آگهی حذف نمی‌شود',
+    `is_hidden` TINYINT(1) DEFAULT 0 COMMENT 'اگر TRUE entonces آگهی پنهان شده (نشیメン트 شده)',
+    `fetched_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    `updated_at` TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+    PRIMARY KEY (`id`),
+    UNIQUE KEY `uk_divar_ad_id` (`divar_ad_id`),
+    KEY `idx_preserve` (`preserve`),
+    KEY `idx_hidden` (`is_hidden`)
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci;
+
+-- Seed a single row with empty values (for structure only)
+INSERT INTO `divar_ads` (`id`, `divar_ad_id`, `title`, `price`, `location`, `image_url`, `description`, `url`, `preserve`, `is_hidden`)
+VALUES (0, '', '', '', '', '', '', '', 0, 0)
+ON DUPLICATE KEY UPDATE `id` = `id`;
 
 -- --------------------------------------------------------
 -- Table: website_info
