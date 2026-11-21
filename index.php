@@ -29,27 +29,8 @@ define('STORAGE_DIR', sys_get_temp_dir() . '/dorfaki');
 define('RATE_LIMIT_MAX', 100);
 define('RATE_LIMIT_WINDOW', 15 * 60); // 15 minutes in seconds
 
-// ===== Load .env file (if present) =====
-$envFile = BASE_DIR . '/.env';
-if (is_file($envFile)) {
-    $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
-    foreach ($lines as $line) {
-        $line = trim($line);
-        if (str_starts_with($line, '#') || str_starts_with($line, ';')) {
-            continue;
-        }
-        if (strpos($line, '=') !== false) {
-            [$key, $value] = explode('=', $line, 2);
-            $key = trim($key);
-            $value = trim($value, "\"'");
-            if (!isset($_ENV[$key]) && !isset($_SERVER[$key])) {
-                putenv($key . '=' . $value);
-                $_ENV[$key] = $value;
-                $_SERVER[$key] = $value;
-            }
-        }
-    }
-}
+// ===== Load environment variables =====
+require_once BASE_DIR . '/src/env.php';
 
 if (!is_dir(STORAGE_DIR)) {
     @mkdir(STORAGE_DIR, 0755, true);
