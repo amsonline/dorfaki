@@ -62,8 +62,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_preserve'])) {
             <p>هنوز آگهی‌ای در پایگاه داده موجود نیست. برای بارگذاری آگهی‌ها، دکمه «بازیابی مجدد» را بزنید.</p>
         </div>
     <?php else: ?>
-        <div class="ads-table-wrapper">
-            <table class="ads-table w-full min-w-[800px]">
+        <div class="divars-table-wrapper">
+            <table class="divars-table w-full min-w-[800px]">
                 <thead>
                     <tr>
                         <th class="text-left p-4 border-b">عنوان</th>
@@ -75,30 +75,30 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['toggle_preserve'])) {
                 </thead>
                 <tbody>
                     <?php foreach ($ads as $ad): ?>
-                        <tr class="ads-row">
-                            <td class="ad-title p-4">
+                        <tr class="divar-row">
+                            <td class="divar-title p-4">
                                 <p class="font-medium"><?php echo htmlspecialchars($ad['title'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p>
                                 <p class="text-sm text-gray-600"><?php echo htmlspecialchars($ad['divar_ad_id'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p>
                             </td>
-                            <td class="ad-price p-4">
+                            <td class="divar-price p-4">
                                 <p><?php echo htmlspecialchars($ad['price'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p>
                             </td>
-                            <td class="ad-location p-4">
+                            <td class="divar-location p-4">
                                 <p><?php echo htmlspecialchars($ad['location'] ?? '', ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></p>
                             </td>
-                            <td class="ad-image p-4">
+                            <td class="divar-image p-4">
                                 <?php if ($ad['image_url']): ?>
-                                    <img src="<?php echo htmlspecialchars($ad['image_url'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" alt="광고 이미지" class="ad-img" />
+                                    <img src="<?php echo htmlspecialchars($ad['image_url'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>" alt="광고 이미지" class="divar-img" />
                                 <?php else: ?>
                                     <span class="no-image">تصویر موجود نیست</span>
                                 <?php endif; ?>
                             </td>
-                            <td class="ad-actions p-4">
+                            <td class="divar-actions p-4">
                                 <form method="POST" class="preserve-form" data-api="/preserve_ad.php">
                                     <input type="hidden" name="ad_id" value="<?php echo htmlspecialchars($ad['divar_ad_id'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?>">
                                     <input type="hidden" name="preserve" value="<?php echo $ad['preserve'] ? '1' : '0'; ?>">
                                     <button type="submit" name="toggle_preserve" class="preserve-btn <?php echo $ad['preserve'] ? 'preserved' : ''; ?>">
-                                        <?php echo $ad['preserve'] ? 'حفاظت‌شده' : 'حفاظتPending'; ?>
+                                        <?php echo $ad['preserve'] ? 'حفاظت‌شده' : 'حفاظت'; ?>
                                     </button>
                                 </form>
                             </td>
@@ -218,30 +218,30 @@ document.addEventListener('DOMContentLoaded', function() {
 
 <!-- Admin CSS and buttons -->
 <style>
-    .ads-table { width: 100%; border-collapse: collapse; }
-    .ads-table th, .ads-table td { padding: 12px 8; border: 1px solid #e2e8f0; }
-    .ads-table th { background-color: #f8fafc; font-weight: 600; }
+    .divars-table { width: 100%; border-collapse: collapse; }
+    .divars-table th, .divars-table td { padding: 12px 8px; border: 1px solid #e2e8f0; }
+    .divars-table th { background-color: #f8fafc; font-weight: 600; }
     
     /* Mobile responsive: enable horizontal scroll on small screens */
     @media (max-width: 768px) {
-        .ads-table_wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
-        .ads-table { min-width: 600px; }
+        .divars-table_wrapper { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+        .divars-table { min-width: 600px; }
     }
     
-    .ads-row { transition: background-color 0.2s; }
-    .ads-row:hover { background-color: #f1f5f9; color: #0a0a0a }
+    .divar-row { transition: background-color 0.2s; }
+    .divar-row:hover { background-color: #f1f5f9; color: #0a0a0a }
     
     .empty-state { text-align: center; padding: 40px 20px; }
     .empty-state-icon { font-size: 48px; margin-bottom: 12px; color: #cbd5e1; }
     .empty-state h3 { margin-bottom: 8px; font-size: 18px; }
     .empty-state p { color: #64748b; font-size: 14px; }
     
-    .ad-image { max-width: 80px; max-height: 60px; }
-    .ad-image img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
+    .divar-image { max-width: 80px; max-height: 60px; }
+    .divar-image img { width: 100%; height: 100%; object-fit: cover; border-radius: 4px; }
     .no-image { color: #64748b; font-size: 12px; }
     
-    .ad-actions { display: flex; gap: 8px; }
-    .preserve-btn { padding: 6px 12px; font-size: 12px; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer; transition: all 0.2s; }
+    .divar-actions { align: center; gap: 8px; }
+    .preserve-btn { padding: 6px 12px; font-size: 12px; border: 1px solid #e2e8f0; border-radius: 4px; cursor: pointer; transition: all 0.2s; color: #374151; background-color: #f9fafb; }
     .preserve-btn.preserved { background-color: #d1fae5; border-color: #a7f3d0; color: #059669; }
     .preserve-btn:not(.preserved) { background-color: #fff; }
     

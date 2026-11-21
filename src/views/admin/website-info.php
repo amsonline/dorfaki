@@ -198,8 +198,8 @@ $pageSubtitle = 'محتوای سایت را ویرایش کنید. تغییرا�
                 </div>
                 <div contenteditable="true" id="aboutMeEditor"
                     class="min-h-[300px] break-words text-gray-300 leading-relaxed outline-none p-3 text-right"
-                    spellcheck="false"><?= htmlspecialchars($fields['about_me'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></div>
-                <textarea id="about_me" name="about_me" class="hidden"><?= htmlspecialchars($fields['about_me'], ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8'); ?></textarea>
+                    spellcheck="false"><?= $fields['about_me'] ?? ''; ?></div>
+                <textarea id="about_me" name="about_me" class="hidden"><?= $fields['about_me'] ?? ''; ?></textarea>
                 <p class="text-xs text-gray-500 mt-1 text-right">محتوای بخش «درباره من» در صفحه اصلی.</p>
             </div>
         </div>
