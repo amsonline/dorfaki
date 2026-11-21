@@ -1,0 +1,6 @@
+
+---
+deployment:
+  tasks:
+    - export DEPLOYPATH=../../public_html
+    - /bin/rsync -av --exclude='.env' ./ $DEPLOYPATH/
