@@ -15,7 +15,7 @@ declare(strict_types=1);
  * Requirements: PHP 7.4+ with cURL and PDO_MYSQL extensions.
  */
 
-require_once __DIR__ . '/../env.php';
+require_once __DIR__ . '/env.php';
 require_once __DIR__ . '/db.php';
 
 const DEFAULT_DIVAR_MERCHANT_ID = 'FFIEsACX';

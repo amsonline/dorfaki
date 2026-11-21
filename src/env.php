@@ -9,7 +9,7 @@ declare(strict_types=1);
  * Or: require_once __DIR__ . '/env.php';
  */
 
-$envFile = __DIR__ . '/../../.env';
+$envFile = __DIR__ . '/../.env';
 if (is_file($envFile)) {
     $lines = file($envFile, FILE_IGNORE_NEW_LINES | FILE_SKIP_EMPTY_LINES);
     foreach ($lines as $line) {
