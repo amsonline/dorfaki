@@ -141,11 +141,14 @@ function extractAdsFromState(array $state): array
             $adId = md5(serialize($data));
         }
 
+        $location = explode(' در ', $data['location'] ?? ($data['area'] ?? ($data['bottom_description_text'] ?? '')));
+        $location = array_pop($location);
+
         $ad = [
             'divar_ad_id'      => $adId,
             'title'            => $data['title'] ?? '',
             'price'            => $data['price'] ?? ($data['middle_description_text'] ?? ''),
-            'location'         => $data['location'] ?? ($data['area'] ?? ($data['bottom_description_text'] ?? '')),
+            'location'         => $location,
             'image_url'        => $data['image'] ?? ($data['images'][0] ?? ($data['image_url'] ?? '')),
             'description'      => $data['description'] ?? '',
             'url'              => $data['url'] ?? ($data['link'] ?? ''),

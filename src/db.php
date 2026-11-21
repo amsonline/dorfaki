@@ -15,7 +15,6 @@ if (!function_exists('dorfakiDbConfig')) {
         $configFile = __DIR__ . '/../config/database.php';
         if (is_file($configFile)) {
             $config = require $configFile;
-            die(print_r($config, true));
             if (is_array($config)) {
                 return $config;
             }
